@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 8000;
 //Define MongoDB connection URL from environment variables
 const MONGOURL = process.env.MONGO_URL;
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "frontend")));
 
 //Connect to MongoDB database
 if (!MONGOURL) {
