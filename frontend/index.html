@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URBS — University Resource Borrowing System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◆</span>
+        <div>
+          <strong>URBS</strong>
+          <span class="brand-sub">Resource borrowing</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <button type="button" class="nav-item active" data-view="dashboard">Dashboard</button>
+        <button type="button" class="nav-item" data-view="resources">Resources</button>
+        <button type="button" class="nav-item" data-view="borrow">Request borrow</button>
+        <button type="button" class="nav-item" data-view="borrowings">All borrowings</button>
+        <button type="button" class="nav-item" data-view="my-loans">My loans</button>
+        <button type="button" class="nav-item" data-view="overdue">Overdue</button>
+      </nav>
+      <div class="sidebar-footer">
+        <label class="field-label" for="studentId">Your student ID</label>
+        <input id="studentId" class="input input-compact" type="text" placeholder="e.g. IT2024001" autocomplete="username" />
+        <p class="hint">Saved in this browser for quick “My loans”.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="pageTitle">Dashboard</h1>
+        <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+      </header>
+
+      <section id="view-dashboard" class="view active">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="panel">
+          <h2>Quick actions</h2>
+          <div class="actions-row">
+            <button type="button" class="btn btn-primary" data-go="borrow">New borrow request</button>
+            <button type="button" class="btn btn-secondary" data-go="resources">Manage resources</button>
+            <button type="button" class="btn btn-secondary" data-go="borrowings">Review borrowings</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-resources" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Inventory</h2>
+            <div class="toolbar">
+              <select id="filterCategory" class="input" aria-label="Filter by category">
+                <option value="">All categories</option>
+              </select>
+              <button type="button" class="btn btn-primary" id="btnToggleAddResource">Add resource</button>
+            </div>
+          </div>
+          <form id="formAddResource" class="form-grid hidden" novalidate>
+            <h3 class="form-title">Add resource</h3>
+            <label class="field">
+              <span class="field-label">Name</span>
+              <input name="name" class="input" required />
+            </label>
+            <label class="field">
+              <span class="field-label">Category</span>
+              <select name="category" class="input" required></select>
+            </label>
+            <label class="field field-span-2">
+              <span class="field-label">Description</span>
+              <textarea name="description" class="input textarea" rows="2"></textarea>
+            </label>
+            <label class="field">
+              <span class="field-label">Total quantity</span>
+              <input name="totalQuantity" class="input" type="number" min="1" value="1" required />
+            </label>
+            <label class="field">
+              <span class="field-label">Condition</span>
+              <select name="condition" class="input"></select>
+            </label>
+            <label class="field field-span-2">
+              <span class="field-label">Location / shelf</span>
+              <input name="location" class="input" placeholder="e.g. Media Lab — Cabinet A" />
+            </label>
+            <div class="form-actions field-span-2">
+              <button type="submit" class="btn btn-primary">Save resource</button>
+              <button type="button" class="btn btn-ghost" id="btnCancelAddResource">Cancel</button>
+            </div>
+          </form>
+          <div class="table-wrap">
+            <table class="table" id="resourcesTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Available</th>
+                  <th>Total</th>
+                  <th>Location</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-borrow" class="view">
+        <div class="panel">
+          <h2>Request a resource</h2>
+          <form id="formBorrow" class="form-grid" novalidate>
+            <label class="field">
+              <span class="field-label">Student name</span>
+              <input name="studentName" class="input" required />
+            </label>
+            <label class="field">
+              <span class="field-label">Student ID</span>
+              <input name="studentId" class="input" required />
+            </label>
+            <label class="field field-span-2">
+              <span class="field-label">Email</span>
+              <input name="studentEmail" class="input" type="email" required />
+            </label>
+            <label class="field field-span-2">
+              <span class="field-label">Resource</span>
+              <select name="resourceId" class="input" required></select>
+            </label>
+            <label class="field">
+              <span class="field-label">Quantity</span>
+              <input name="quantityBorrowed" class="input" type="number" min="1" value="1" required />
+            </label>
+            <label class="field">
+              <span class="field-label">Expected return</span>
+              <input name="expectedReturnDate" class="input" type="datetime-local" required />
+            </label>
+            <label class="field field-span-2">
+              <span class="field-label">Purpose (optional)</span>
+              <textarea name="purpose" class="input textarea" rows="2" placeholder="e.g. Club event recording"></textarea>
+            </label>
+            <div class="form-actions field-span-2">
+              <button type="submit" class="btn btn-primary">Submit request</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="view-borrowings" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>All borrowings</h2>
+            <button type="button" class="btn btn-secondary" id="btnRefreshBorrowings">Refresh</button>
+          </div>
+          <p class="muted">Approve or reject pending requests. Return marks items back in stock.</p>
+          <div class="table-wrap">
+            <table class="table" id="borrowingsTable">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Resource</th>
+                  <th>Qty</th>
+                  <th>Due</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-my-loans" class="view">
+        <div class="panel">
+          <h2>My loans</h2>
+          <p class="muted">Uses the student ID from the sidebar. Load to see your history.</p>
+          <button type="button" class="btn btn-primary" id="btnLoadMyLoans">Load my borrowings</button>
+          <div class="table-wrap" style="margin-top: 1rem;">
+            <table class="table" id="myLoansTable">
+              <thead>
+                <tr>
+                  <th>Resource</th>
+                  <th>Qty</th>
+                  <th>Borrowed</th>
+                  <th>Due</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-overdue" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Overdue items</h2>
+            <button type="button" class="btn btn-secondary" id="btnRefreshOverdue">Refresh</button>
+          </div>
+          <div id="overdueSummary" class="muted"></div>
+          <div class="table-wrap">
+            <table class="table" id="overdueTable">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Resource</th>
+                  <th>Qty</th>
+                  <th>Was due</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="dialogNotes" class="dialog">
+    <form method="dialog" id="formNotes">
+      <h3 id="dialogNotesTitle">Admin notes</h3>
+      <textarea id="dialogNotesText" class="input textarea" rows="3" placeholder="Optional note to store on this record"></textarea>
+      <div class="dialog-actions">
+        <button type="submit" value="confirm" class="btn btn-primary">Confirm</button>
+        <button type="submit" value="cancel" class="btn btn-ghost">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
